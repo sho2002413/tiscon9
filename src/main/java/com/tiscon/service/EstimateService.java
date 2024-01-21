@@ -85,6 +85,21 @@ public class EstimateService {
         // 箱に応じてトラックの種類が変わり、それに応じて料金が変わるためトラック料金を算出する。
         int pricePerTruck = estimateDAO.getPricePerTruck(boxes);
 
+        //  季節計数を算出する    
+        double priceForMonth = 1.0;
+        String month = dto.getMonth();
+        // ３，４月のときは１．５
+        if (month.equals("3") || month.equals("4"))
+        {
+            priceForMonth = 1.5;
+        } 
+        // ９月のときは１．２
+        if (month.equals("9"))
+        {
+            priceForMonth = 1.2;
+        } 
+    
+
         // オプションサービスの料金を算出する。
         int priceForOptionalService = 0;
 
@@ -92,7 +107,12 @@ public class EstimateService {
             priceForOptionalService = estimateDAO.getPricePerOptionalService(OptionalServiceType.WASHING_MACHINE.getCode());
         }
 
-        return priceForDistance + pricePerTruck + priceForOptionalService;
+        // 総金額に季節計数をかける
+        double tmp = (priceForDistance + pricePerTruck) * priceForMonth + priceForOptionalService;
+        //double型をint型に変換する
+        int tmp1 =(int)tmp;
+        return tmp1;
+
     }
 
     /**
